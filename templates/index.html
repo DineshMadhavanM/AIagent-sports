@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sports AI Agent</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .query-form {
+            margin-bottom: 20px;
+        }
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            min-height: 100px;
+            margin-bottom: 10px;
+            font-family: inherit;
+            font-size: 16px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        button:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+        .response {
+            background-color: white;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin-top: 20px;
+            white-space: pre-wrap;
+            min-height: 50px;
+        }
+        .loading {
+            text-align: center;
+            padding: 20px;
+            display: none;
+        }
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #3498db;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .examples {
+            margin-top: 30px;
+        }
+        .examples h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .example-query {
+            display: inline-block;
+            background-color: #e8f4fc;
+            padding: 8px 15px;
+            margin: 5px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.2s;
+        }
+        .example-query:hover {
+            background-color: #d0e3f6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Sports AI Agent</h1>
+        
+        <div class="query-form">
+            <form id="queryForm" onsubmit="event.preventDefault(); handleFormSubmit();">
+                <textarea 
+                    id="queryInput" 
+                    placeholder="Ask me anything about sports (cricket, football, basketball, tennis, etc.)..."
+                    required
+                ></textarea>
+                <button type="submit" id="submitBtn">Get Response</button>
+            </form>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Getting your sports analysis...</p>
+        </div>
+
+        <div class="response" id="response"></div>
+
+        <div class="examples">
+            <h3>Try these examples:</h3>
+            <div class="example-query" onclick="useExample(this)">Explain T20 cricket rules</div>
+            <div class="example-query" onclick="useExample(this)">Match summary: Team A vs Team B in football</div>
+            <div class="example-query" onclick="useExample(this)">Basketball stats to compare two guards</div>
+            <div class="example-query" onclick="useExample(this)">Commentary style for a tennis match</div>
+            <div class="example-query" onclick="useExample(this)">News brief preview: two IPL teams clash</div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('queryForm');
+        const queryInput = document.getElementById('queryInput');
+        const submitBtn = document.getElementById('submitBtn');
+        const loading = document.getElementById('loading');
+        const responseDiv = document.getElementById('response');
+        const API_URL = 'http://localhost:5000/query';
+
+        // Function to handle form submission
+        async function handleFormSubmit(event) {
+            event.preventDefault();
+            const query = queryInput.value.trim();
+            if (!query) return;
+
+            // Show loading, disable form
+            loading.style.display = 'block';
+            submitBtn.disabled = true;
+            responseDiv.textContent = '';
+
+            try {
+                // First make an OPTIONS request for CORS preflight
+                await fetch(API_URL, {
+                    method: 'OPTIONS',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    }
+                });
+
+                // Then make the actual POST request
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    mode: 'cors',
+                    cache: 'no-cache',
+                    credentials: 'same-origin',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ query: query })
+                });
+
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || `HTTP error! status: ${response.status}`);
+                }
+                
+                responseDiv.textContent = data.response;
+                
+            } catch (error) {
+                console.error('Error:', error);
+                responseDiv.textContent = `Error: ${error.message}`;
+            } finally {
+                loading.style.display = 'none';
+                submitBtn.disabled = false;
+            }
+        }
+
+        // Function to handle example clicks
+        function useExample(element) {
+            queryInput.value = element.textContent;
+            queryInput.focus();
+        }
+
+        // Add event listeners
+        form.addEventListener('submit', handleFormSubmit);
+        
+        // Add click handlers to all example queries
+        document.querySelectorAll('.example-query').forEach(example => {
+            example.addEventListener('click', function() {
+                useExample(this);
+                handleFormSubmit(new Event('submit'));
+            });
+        });
+    </script>
+</body>
+</html>
