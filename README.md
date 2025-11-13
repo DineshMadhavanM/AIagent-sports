@@ -1,54 +1,124 @@
-# Sports Text-Only AI Agent
+# 🏆 Sports AI Agent
 
-A professional, insightful, conversational sports analyst agent. Text-only responses. Handles cricket, football (soccer), basketball, tennis, and more.
+[![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![GitHub stars](https://img.shields.io/github/stars/DineshMadhavanM/AIagent-sports?style=social)](https://github.com/DineshMadhavanM/AIagent-sports/stargazers)
 
-## Features
+A professional, insightful, conversational sports analyst agent. Text-only responses. Handles cricket, football (soccer), basketball, tennis, and more using both rule-based responses and AI-powered analysis.
 
-- Explains rules, formats, and scoring systems
-- Provides match summaries and analysis
-- Discusses player statistics and trends
-- Generates commentary-style text or reports
-- Offers news-style briefs and hypothetical predictions (no real-time data)
-- General sports knowledge Q&A
+## ✨ Features
 
-## Quickstart
+- **Multi-sport Support**: Cricket, Football, Basketball, Tennis, and more
+- **Multiple AI Backends**: Rule-based, OpenAI, and Google Gemini integration
+- **Web Interface**: Beautiful, responsive web interface for easy interaction
+- **CLI Tool**: Command-line interface for quick queries and automation
+- **Extensible Architecture**: Easy to add new sports and features
+- **Smart Responses**: Context-aware, detailed, and accurate sports information
 
-1) Create a virtual environment and install dependencies
+## 🚀 Quick Start
 
+### Prerequisites
+- Python 3.8+
+- pip (Python package manager)
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/DineshMadhavanM/AIagent-sports.git
+   cd AIagent-sports
+   ```
+
+2. **Create and activate a virtual environment**
+   ```bash
+   # Windows
+   python -m venv venv
+   .\venv\Scripts\activate
+   
+   # macOS/Linux
+   python3 -m venv venv
+   source venv/bin/activate
+   ```
+
+3. **Install dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Set up environment variables**
+   Create a `.env` file in the project root and add your API keys:
+   ```
+   # For Gemini AI (required for AI features)
+   GOOGLE_API_KEY=your_gemini_api_key_here
+   
+   # For OpenAI (optional)
+   OPENAI_API_KEY=your_openai_api_key_here
+   ```
+
+## 🖥️ Usage
+
+### Web Interface (Recommended)
 ```bash
-python -m venv .venv
-.venv\Scripts\activate
-pip install -r requirements.txt
+python app.py
 ```
+Then open `http://localhost:5000` in your browser.
 
-2) Run the CLI (rule-based provider by default)
-
+### Command Line Interface
 ```bash
+# Basic usage
 python cli.py -q "Explain T20 cricket rules"
-python cli.py -q "Match summary: Team A vs Team B in football"
-python cli.py -q "Basketball stats to compare two guards"
-python cli.py -q "Commentary style for a tennis game"
-python cli.py -q "News brief preview: two IPL teams clash"
+
+# Specify provider (rule, openai, or gemini)
+python cli.py -p gemini -q "Analyze Messi's playing style"
+
+# Get help
+python cli.py --help
 ```
 
-3) Optional: Use OpenAI provider
+## 🏗️ Project Structure
 
-- Set environment variables and run with provider `openai`
-
-```bash
-set OPENAI_API_KEY=your_key_here
-python cli.py -p openai -q "Explain offside rule in football"
+```
+AIagent-sports/
+├── app.py              # Flask web application
+├── cli.py              # Command-line interface
+├── requirements.txt    # Python dependencies
+├── sports_agent/       # Core AI agent
+│   ├── __init__.py
+│   ├── agent.py        # Main agent class
+│   ├── prompt.py       # System prompts
+│   └── providers/      # Response providers
+│       ├── __init__.py
+│       ├── rule_based.py
+│       └── gemini_provider.py
+└── templates/          # Web templates
+    └── index.html
 ```
 
-You can also control the model with `-m` or `OPENAI_MODEL`.
+## 🤝 Contributing
 
-## Programmatic usage
+Contributions are welcome! Here's how you can help:
 
-```python
-from sports_agent import SportsAgent
-agent = SportsAgent(provider="rule")
-print(agent.respond("Explain basketball scoring"))
-```
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+### Good First Issues
+- Add support for more sports
+- Improve error handling
+- Add unit tests
+- Enhance the web interface
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- Google Gemini AI for the powerful language model
+- Flask for the web framework
+- All contributors and supporters
 
 ## Notes
 
