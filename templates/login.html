@@ -1,0 +1,44 @@
+{% extends "base_auth.html" %}
+
+{% block title %}Login - Sports Agent{% endblock %}
+
+{% block content %}
+<div class="auth-header">
+    <h2>Welcome Back</h2>
+    <p class="text-muted">Sign in to continue to Sports Agent</p>
+</div>
+
+<form id="loginForm" action="/login" method="POST">
+    <div class="mb-3">
+        <label for="email" class="form-label">Email address</label>
+        <input type="email" class="form-control" id="email" name="email" required>
+    </div>
+    <div class="mb-3">
+        <label for="password" class="form-label">Password</label>
+        <input type="password" class="form-control" id="password" name="password" required>
+    </div>
+    <div class="d-flex justify-content-between mb-3">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" id="remember" name="remember">
+            <label class="form-check-label" for="remember">Remember me</label>
+        </div>
+        <div>
+            <a href="/forgot-password" class="text-decoration-none">Forgot password?</a>
+        </div>
+    </div>
+    <div class="d-grid gap-2">
+        <button type="submit" class="btn btn-primary">Log In</button>
+    </div>
+</form>
+
+<div class="auth-footer">
+    <p class="mb-0">Don't have an account? <a href="/signup">Sign up</a></p>
+</div>
+
+<script>
+document.getElementById('loginForm').addEventListener('submit', function(e) {
+    // Add any client-side validation if needed
+    return true;
+});
+</script>
+{% endblock %}
