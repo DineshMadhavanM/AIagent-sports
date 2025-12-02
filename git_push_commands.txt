@@ -1,0 +1,23 @@
+# Step 1: Navigate to your project directory
+cd "c:\Users\saran\OneDrive\Dokumen\Genai assignment 1"
+
+# Step 2: Initialize Git (only needed once)
+git init
+
+# Step 3: Add all files to staging
+git add .
+
+# Step 4: Commit your changes
+git commit -m "Initial commit with backend structure"
+
+# Step 5: Add remote repository (replace with your GitHub URL)
+git remote add origin https://github.com/your-username/your-repo-name.git
+
+# Step 6: Push to main branch
+git push -u origin main
+
+# If you get an error on the push command, try this first:
+git pull origin main --allow-unrelated-histories
+
+# Then try pushing again
+git push -u origin main

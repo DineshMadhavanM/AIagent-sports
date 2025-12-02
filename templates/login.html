@@ -8,16 +8,58 @@
     <p class="text-muted">Sign in to continue to Sports Agent</p>
 </div>
 
-<form id="loginForm" action="/login" method="POST">
+<!-- Social Login Buttons -->
+<div class="social-login mb-4">
+    <div class="d-grid gap-2">
+        <a href="/auth/google" class="btn btn-outline-danger">
+            <i class="fab fa-google me-2"></i> Continue with Google
+        </a>
+        <a href="/auth/github" class="btn btn-dark">
+            <i class="fab fa-github me-2"></i> Continue with GitHub
+        </a>
+    </div>
+    <div class="divider my-4">
+        <span class="px-2 bg-white text-muted">OR</span>
+    </div>
+</div>
+
+<!-- Login Form -->
+<form id="loginForm" action="/login" method="POST" novalidate>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    
     <div class="mb-3">
         <label for="email" class="form-label">Email address</label>
-        <input type="email" class="form-control" id="email" name="email" required>
+        <div class="input-group">
+            <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+            <input type="email" class="form-control" id="email" name="email" required 
+                   placeholder="Enter your email" autocomplete="username">
+        </div>
+        <div class="invalid-feedback">Please provide a valid email address.</div>
     </div>
+    
     <div class="mb-3">
         <label for="password" class="form-label">Password</label>
-        <input type="password" class="form-control" id="password" name="password" required>
+        <div class="input-group">
+            <span class="input-group-text"><i class="fas fa-lock"></i></span>
+            <input type="password" class="form-control" id="password" name="password" 
+                   required minlength="8" placeholder="Enter your password" autocomplete="current-password">
+            <button class="btn btn-outline-secondary toggle-password" type="button">
+                <i class="far fa-eye"></i>
+            </button>
+        </div>
+        <div class="invalid-feedback">Password must be at least 8 characters long.</div>
     </div>
-    <div class="d-flex justify-content-between mb-3">
+    
+    <div class="d-flex justify-content-between mb-4">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" id="remember" name="remember">
             <label class="form-check-label" for="remember">Remember me</label>
@@ -26,19 +68,166 @@
             <a href="/forgot-password" class="text-decoration-none">Forgot password?</a>
         </div>
     </div>
-    <div class="d-grid gap-2">
-        <button type="submit" class="btn btn-primary">Log In</button>
+    
+    <div class="d-grid gap-2 mb-3">
+        <button type="submit" class="btn btn-primary btn-lg">
+            <i class="fas fa-sign-in-alt me-2"></i>Log In
+        </button>
+    </div>
+    
+    <div class="text-center">
+        <div class="form-check form-switch d-inline-block me-2">
+            <input class="form-check-input" type="checkbox" id="darkModeToggle">
+            <label class="form-check-label" for="darkModeToggle">Dark Mode</label>
+        </div>
     </div>
 </form>
 
-<div class="auth-footer">
-    <p class="mb-0">Don't have an account? <a href="/signup">Sign up</a></p>
+<div class="auth-footer text-center mt-4">
+    <p class="mb-2">Don't have an account? <a href="/signup" class="fw-bold">Sign up</a></p>
+    <p class="small text-muted">By continuing, you agree to our 
+        <a href="/terms" class="text-decoration-none">Terms of Service</a> and 
+        <a href="/privacy" class="text-decoration-none">Privacy Policy</a>.
+    </p>
 </div>
 
 <script>
-document.getElementById('loginForm').addEventListener('submit', function(e) {
-    // Add any client-side validation if needed
-    return true;
-});
+// Form validation
+(function () {
+    'use strict'
+    
+    // Fetch the form we want to apply custom Bootstrap validation styles to
+    const form = document.getElementById('loginForm')
+    
+    // Toggle password visibility
+    const togglePassword = document.querySelector('.toggle-password');
+    const password = document.getElementById('password');
+    
+    if (togglePassword) {
+        togglePassword.addEventListener('click', function () {
+            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+            password.setAttribute('type', type);
+            this.querySelector('i').classList.toggle('fa-eye');
+            this.querySelector('i').classList.toggle('fa-eye-slash');
+        });
+    }
+    
+    // Dark mode toggle
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    if (darkModeToggle) {
+        // Check for saved user preference, if any, on load
+        if (localStorage.getItem('darkMode') === 'enabled') {
+            document.body.classList.add('dark-mode');
+            darkModeToggle.checked = true;
+        }
+        
+        darkModeToggle.addEventListener('change', function() {
+            if (this.checked) {
+                document.body.classList.add('dark-mode');
+                localStorage.setItem('darkMode', 'enabled');
+            } else {
+                document.body.classList.remove('dark-mode');
+                localStorage.setItem('darkMode', null);
+            }
+        });
+    }
+    
+    // Form validation
+    if (form) {
+        form.addEventListener('submit', function (event) {
+            if (!form.checkValidity()) {
+                event.preventDefault()
+                event.stopPropagation()
+            }
+            
+            form.classList.add('was-validated')
+            
+            // Additional custom validation can be added here
+            const password = document.getElementById('password').value;
+            if (password.length > 0 && password.length < 8) {
+                event.preventDefault();
+                event.stopPropagation();
+                document.getElementById('password').classList.add('is-invalid');
+            }
+        }, false)
+    }
+})()
 </script>
+
+<style>
+/* Dark mode styles */
+.dark-mode {
+    background-color: #1a1a1a;
+    color: #f8f9fa;
+}
+
+.dark-mode .auth-card {
+    background-color: #2d2d2d;
+    color: #f8f9fa;
+}
+
+.dark-mode .form-control {
+    background-color: #3d3d3d;
+    color: #f8f9fa;
+    border-color: #4d4d4d;
+}
+
+.dark-mode .form-control:focus {
+    background-color: #4d4d4d;
+    color: #ffffff;
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.dark-mode .form-control::placeholder {
+    color: #adb5bd;
+}
+
+.dark-mode .input-group-text {
+    background-color: #3d3d3d;
+    color: #f8f9fa;
+    border-color: #4d4d4d;
+}
+
+.dark-mode .form-check-input:checked {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.dark-mode .divider span {
+    background-color: #2d2d2d !important;
+    color: #adb5bd !important;
+}
+
+/* Custom styles */
+.divider {
+    position: relative;
+    text-align: center;
+    margin: 20px 0;
+    border-top: 1px solid #dee2e6;
+}
+
+.divider span {
+    position: relative;
+    top: -10px;
+    padding: 0 10px;
+    background-color: #f8f9fa;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.toggle-password {
+    cursor: pointer;
+}
+
+.btn-google {
+    background-color: #db4437;
+    color: white;
+}
+
+.btn-google:hover {
+    background-color: #c23321;
+    color: white;
+}
+</style>
 {% endblock %}

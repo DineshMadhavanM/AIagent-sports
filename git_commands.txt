@@ -1,0 +1,13 @@
+# Add a single file
+git add wsgi.py
+
+# Commit with message
+git commit -m "Add WSGI configuration"
+
+# Push to GitHub
+git push
+
+# If you need to add multiple files:
+# git add file1.py file2.py
+# git commit -m "Your commit message"
+# git push

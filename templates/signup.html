@@ -8,50 +8,382 @@
     <p class="text-muted">Join our sports community today</p>
 </div>
 
-<form id="signupForm" action="/signup" method="POST">
+<!-- Social Signup Buttons -->
+<div class="social-login mb-4">
+    <div class="d-grid gap-2">
+        <a href="/auth/google" class="btn btn-outline-danger">
+            <i class="fab fa-google me-2"></i> Sign up with Google
+        </a>
+        <a href="/auth/github" class="btn btn-dark">
+            <i class="fab fa-github me-2"></i> Sign up with GitHub
+        </a>
+    </div>
+    <div class="divider my-4">
+        <span class="px-2 bg-white text-muted">OR</span>
+    </div>
+</div>
+
+<!-- Signup Form -->
+<form id="signupForm" action="/signup" method="POST" novalidate>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label for="firstName" class="form-label">First Name</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                <input type="text" class="form-control" id="firstName" name="first_name" required 
+                       placeholder="Enter your first name" autocomplete="given-name">
+            </div>
+            <div class="invalid-feedback">Please provide your first name.</div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="lastName" class="form-label">Last Name</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                <input type="text" class="form-control" id="lastName" name="last_name" required 
+                       placeholder="Enter your last name" autocomplete="family-name">
+            </div>
+            <div class="invalid-feedback">Please provide your last name.</div>
+        </div>
+    </div>
+    
     <div class="mb-3">
         <label for="username" class="form-label">Username</label>
-        <input type="text" class="form-control" id="username" name="username" required>
+        <div class="input-group">
+            <span class="input-group-text">@</span>
+            <input type="text" class="form-control" id="username" name="username" required 
+                   placeholder="Choose a username" autocomplete="username">
+            <div class="input-group-append">
+                <span class="input-group-text">
+                    <i class="fas fa-check-circle text-success d-none" id="username-available"></i>
+                    <i class="fas fa-times-circle text-danger d-none" id="username-taken"></i>
+                </span>
+            </div>
+        </div>
+        <div class="invalid-feedback">Please choose a username.</div>
+        <div class="form-text">This will be your unique identifier on our platform.</div>
     </div>
+    
     <div class="mb-3">
         <label for="email" class="form-label">Email address</label>
-        <input type="email" class="form-control" id="email" name="email" required>
+        <div class="input-group">
+            <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+            <input type="email" class="form-control" id="email" name="email" required 
+                   placeholder="Enter your email" autocomplete="email">
+        </div>
+        <div class="invalid-feedback">Please provide a valid email address.</div>
     </div>
+    
     <div class="mb-3">
         <label for="password" class="form-label">Password</label>
-        <input type="password" class="form-control" id="password" name="password" required>
+        <div class="input-group">
+            <span class="input-group-text"><i class="fas fa-lock"></i></span>
+            <input type="password" class="form-control" id="password" name="password" 
+                   required minlength="8" placeholder="Create a password" 
+                   autocomplete="new-password" oninput="checkPasswordStrength(this.value)">
+            <button class="btn btn-outline-secondary toggle-password" type="button">
+                <i class="far fa-eye"></i>
+            </button>
+        </div>
+        <div class="password-strength mt-2">
+            <div class="progress" style="height: 5px;">
+                <div id="password-strength-bar" class="progress-bar" role="progressbar" style="width: 0%"></div>
+            </div>
+            <small id="password-strength-text" class="form-text"></small>
+        </div>
+        <div class="invalid-feedback">Password must be at least 8 characters long.</div>
+        <div class="form-text">Use 8 or more characters with a mix of letters, numbers & symbols.</div>
     </div>
-    <div class="mb-3">
+    
+    <div class="mb-4">
         <label for="confirm_password" class="form-label">Confirm Password</label>
-        <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+        <div class="input-group">
+            <span class="input-group-text"><i class="fas fa-lock"></i></span>
+            <input type="password" class="form-control" id="confirm_password" name="confirm_password" 
+                   required placeholder="Confirm your password" autocomplete="new-password">
+            <button class="btn btn-outline-secondary toggle-password" type="button">
+                <i class="far fa-eye"></i>
+            </button>
+        </div>
+        <div class="invalid-feedback">Passwords must match.</div>
     </div>
-    <div class="d-grid gap-2">
-        <button type="submit" class="btn btn-primary">Sign Up</button>
+    
+    <div class="mb-4">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" id="terms" name="terms" required>
+            <label class="form-check-label" for="terms">
+                I agree to the <a href="/terms" target="_blank" class="text-decoration-none">Terms of Service</a> and 
+                <a href="/privacy" target="_blank" class="text-decoration-none">Privacy Policy</a>
+            </label>
+            <div class="invalid-feedback">You must agree to the terms and conditions.</div>
+        </div>
+        
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" id="newsletter" name="newsletter" checked>
+            <label class="form-check-label" for="newsletter">
+                Subscribe to our newsletter for updates and offers
+            </label>
+        </div>
+    </div>
+    
+    <div class="d-grid gap-2 mb-3">
+        <button type="submit" class="btn btn-primary btn-lg">
+            <i class="fas fa-user-plus me-2"></i>Create Account
+        </button>
+    </div>
+    
+    <div class="text-center">
+        <div class="form-check form-switch d-inline-block me-2">
+            <input class="form-check-input" type="checkbox" id="darkModeToggle">
+            <label class="form-check-label" for="darkModeToggle">Dark Mode</label>
+        </div>
     </div>
 </form>
 
-<div class="auth-footer">
-    <p class="mb-0">Already have an account? <a href="/login">Log in</a></p>
+<div class="auth-footer text-center mt-4">
+    <p class="mb-0">Already have an account? <a href="/login" class="fw-bold">Log in</a></p>
 </div>
 
 <script>
-document.getElementById('signupForm').addEventListener('submit', function(e) {
-    const password = document.getElementById('password').value;
-    const confirmPassword = document.getElementById('confirm_password').value;
+// Form validation
+(function () {
+    'use strict'
     
-    if (password !== confirmPassword) {
-        e.preventDefault();
-        alert('Passwords do not match!');
-        return false;
+    // Fetch the form we want to apply custom Bootstrap validation styles to
+    const form = document.getElementById('signupForm')
+    const password = document.getElementById('password');
+    const confirmPassword = document.getElementById('confirm_password');
+    
+    // Toggle password visibility
+    const togglePasswordButtons = document.querySelectorAll('.toggle-password');
+    
+    togglePasswordButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            const input = this.previousElementSibling;
+            const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+            input.setAttribute('type', type);
+            this.querySelector('i').classList.toggle('fa-eye');
+            this.querySelector('i').classList.toggle('fa-eye-slash');
+        });
+    });
+    
+    // Username availability check (simulated)
+    const usernameInput = document.getElementById('username');
+    const usernameAvailableIcon = document.getElementById('username-available');
+    const usernameTakenIcon = document.getElementById('username-taken');
+    
+    if (usernameInput) {
+        let usernameCheckTimeout;
+        
+        usernameInput.addEventListener('input', function() {
+            clearTimeout(usernameCheckTimeout);
+            usernameAvailableIcon.classList.add('d-none');
+            usernameTakenIcon.classList.add('d-none');
+            
+            if (this.value.length >= 3) {
+                usernameCheckTimeout = setTimeout(() => {
+                    // Simulate API call to check username availability
+                    const isAvailable = Math.random() > 0.5;
+                    
+                    if (isAvailable) {
+                        usernameAvailableIcon.classList.remove('d-none');
+                        usernameTakenIcon.classList.add('d-none');
+                    } else {
+                        usernameAvailableIcon.classList.add('d-none');
+                        usernameTakenIcon.classList.remove('d-none');
+                    }
+                }, 500);
+            }
+        });
     }
     
-    if (password.length < 8) {
-        e.preventDefault();
-        alert('Password must be at least 8 characters long');
-        return false;
+    // Password strength checker
+    window.checkPasswordStrength = function(password) {
+        const strengthBar = document.getElementById('password-strength-bar');
+        const strengthText = document.getElementById('password-strength-text');
+        
+        if (!strengthBar || !strengthText) return;
+        
+        // Reset
+        strengthBar.style.width = '0%';
+        
+        if (password.length === 0) {
+            strengthBar.className = 'progress-bar';
+            strengthText.textContent = '';
+            return;
+        }
+        
+        // Calculate strength (0-100)
+        let strength = 0;
+        
+        // Length check
+        strength += Math.min(40, (password.length / 12) * 40);
+        
+        // Complexity checks
+        if (password.match(/[a-z]+/)) strength += 10;
+        if (password.match(/[A-Z]+/)) strength += 10;
+        if (password.match(/[0-9]+/)) strength += 20;
+        if (password.match(/[!@#$%^&*(),.?":{}|<>]+/)) strength += 20;
+        
+        // Update UI
+        strength = Math.min(100, Math.max(0, strength)); // Ensure between 0-100
+        strengthBar.style.width = strength + '%';
+        
+        if (strength < 30) {
+            strengthBar.className = 'progress-bar bg-danger';
+            strengthText.textContent = 'Weak';
+            strengthText.className = 'text-danger';
+        } else if (strength < 70) {
+            strengthBar.className = 'progress-bar bg-warning';
+            strengthText.textContent = 'Moderate';
+            strengthText.className = 'text-warning';
+        } else {
+            strengthBar.className = 'progress-bar bg-success';
+            strengthText.textContent = 'Strong';
+            strengthText.className = 'text-success';
+        }
+    };
+    
+    // Dark mode toggle
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    if (darkModeToggle) {
+        // Check for saved user preference, if any, on load
+        if (localStorage.getItem('darkMode') === 'enabled') {
+            document.body.classList.add('dark-mode');
+            darkModeToggle.checked = true;
+        }
+        
+        darkModeToggle.addEventListener('change', function() {
+            if (this.checked) {
+                document.body.classList.add('dark-mode');
+                localStorage.setItem('darkMode', 'enabled');
+            } else {
+                document.body.classList.remove('dark-mode');
+                localStorage.setItem('darkMode', null);
+            }
+        });
     }
     
-    return true;
-});
+    // Form validation
+    if (form) {
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+            
+            // Reset validation
+            form.classList.add('was-validated');
+            
+            // Custom validation for password match
+            if (password.value !== confirmPassword.value) {
+                confirmPassword.setCustomValidity("Passwords don't match");
+                confirmPassword.classList.add('is-invalid');
+            } else {
+                confirmPassword.setCustomValidity('');
+                confirmPassword.classList.remove('is-invalid');
+            }
+            
+            // Check form validity
+            if (!form.checkValidity()) {
+                event.stopPropagation();
+                return;
+            }
+            
+            // If form is valid, submit it
+            form.submit();
+        }, false);
+    }
+})();
 </script>
+
+<style>
+/* Reuse styles from login page */
+.divider {
+    position: relative;
+    text-align: center;
+    margin: 20px 0;
+    border-top: 1px solid #dee2e6;
+}
+
+.divider span {
+    position: relative;
+    top: -10px;
+    padding: 0 10px;
+    background-color: #f8f9fa;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.toggle-password {
+    cursor: pointer;
+}
+
+.password-strength {
+    margin-top: 0.5rem;
+}
+
+/* Dark mode styles (reused from login) */
+.dark-mode {
+    background-color: #1a1a1a;
+    color: #f8f9fa;
+}
+
+.dark-mode .auth-card {
+    background-color: #2d2d2d;
+    color: #f8f9fa;
+}
+
+.dark-mode .form-control {
+    background-color: #3d3d3d;
+    color: #f8f9fa;
+    border-color: #4d4d4d;
+}
+
+.dark-mode .form-control:focus {
+    background-color: #4d4d4d;
+    color: #ffffff;
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.dark-mode .form-control::placeholder {
+    color: #adb5bd;
+}
+
+.dark-mode .input-group-text {
+    background-color: #3d3d3d;
+    color: #f8f9fa;
+    border-color: #4d4d4d;
+}
+
+.dark-mode .form-check-input:checked {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.dark-mode .divider span {
+    background-color: #2d2d2d !important;
+    color: #adb5bd !important;
+}
+
+/* Custom checkbox styling */
+.form-check-input:checked {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+/* Tooltip styling */
+.tooltip-inner {
+    max-width: 300px;
+    padding: 0.5rem 1rem;
+}
+</style>
 {% endblock %}
